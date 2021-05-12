@@ -1,0 +1,26 @@
+{
+    "name": "planetadeleste/oc-apiordersshopaholic-plugin",
+    "description": "RESTful API for Shopaholic Orders Plugins",
+    "type": "october-plugin",
+    "license": "MIT",
+    "keywords": ["october", "shopaholic", "api", "orders"],
+    "authors": [
+        {
+            "name": "Alvaro Canepa",
+            "email": "bfpdevel@gmail.com",
+            "role": "creator"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PlanetaDelEste\\ApiOrdersShopaholic\\": ""
+        }
+    },
+    "extra": {
+        "installer-name": "apiordersshopaholic"
+    },
+    "require": {
+        "php": ">=7.2",
+        "planetadeleste/oc-apitoolbox-plugin":"^1.0"
+    }
+}
