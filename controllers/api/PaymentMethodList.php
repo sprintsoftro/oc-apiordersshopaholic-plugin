@@ -1,4 +1,4 @@
-<?php namespace PlanetaDelEste\ApiShopaholic\Controllers\Api;
+<?php namespace PlanetaDelEste\ApiOrdersShopaholic\Controllers\Api;
 
 use Cms\Classes\ComponentManager;
 use Kharanenka\Helper\Result;

@@ -1,4 +1,4 @@
-<?php namespace PlanetaDelEste\ApiShopaholic\Controllers\Api;
+<?php namespace PlanetaDelEste\ApiOrdersShopaholic\Controllers\Api;
 
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
 use Lovata\OrdersShopaholic\Models\Status;
