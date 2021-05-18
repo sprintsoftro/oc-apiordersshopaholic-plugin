@@ -23,10 +23,5 @@ class ShowResource extends ItemResource
             'color',
         ];
     }
-
-    protected function getEvent(): string
-    {
-        return Plugin::EVENT_SHOWRESOURCE_DATA;
-    }
 }
 

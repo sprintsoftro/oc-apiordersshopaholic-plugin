@@ -1,9 +1,9 @@
 <?php namespace PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Order;
 
 use PlanetaDelEste\ApiToolbox\Classes\Resource\Base as BaseResource;
-use PlanetaDelEste\ApiShopaholic\Classes\Resource\PaymentMethod\ItemResource as ItemResourcePaymentMethod;
-use PlanetaDelEste\ApiShopaholic\Classes\Resource\Status\ItemResource as ItemResourceStatus;
-use PlanetaDelEste\ApiToolbox\Plugin;
+use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\PaymentMethod\ItemResource as ItemResourcePaymentMethod;
+use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Status\ItemResource as ItemResourceStatus;
+use PlanetaDelEste\ApiOrdersShopaholic\Plugin;
 
 /**
  * Class ItemResource
@@ -39,6 +39,6 @@ class ItemResource extends BaseResource
 
     protected function getEvent(): ?string
     {
-        return Plugin::EVENT_ITEMRESOURCE_DATA;
+        return Plugin::EVENT_ITEMRESOURCE_DATA.'.order';
     }
 }

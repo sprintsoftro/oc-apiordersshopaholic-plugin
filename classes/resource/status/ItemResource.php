@@ -1,7 +1,7 @@
 <?php namespace PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Status;
 
 use PlanetaDelEste\ApiToolbox\Classes\Resource\Base as BaseResource;
-use PlanetaDelEste\ApiToolbox\Plugin;
+use PlanetaDelEste\ApiOrdersShopaholic\Plugin;
 
 /**
  * Class ItemResource
@@ -17,7 +17,7 @@ class ItemResource extends BaseResource
      */
     protected function getEvent(): ?string
     {
-        return Plugin::EVENT_ITEMRESOURCE_DATA;
+        return Plugin::EVENT_ITEMRESOURCE_DATA.'.status';
     }
 
     /**

@@ -4,7 +4,7 @@ Route::prefix('api/v1')
     ->middleware(['throttle:120,1', 'bindings'])
     ->group(
         function () {
-            $arRoutes = ['cart','orders'];
+            $arRoutes = ['cart','orders', 'profile'];
             foreach ($arRoutes as $sPublicRoute) {
                 Route::group([], plugins_path('/planetadeleste/apiordersshopaholic/routes/'.$sPublicRoute.'.php'));
             }

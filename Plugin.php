@@ -10,6 +10,8 @@ use System\Classes\PluginBase;
  */
 class Plugin extends PluginBase
 {
+    const EVENT_ITEMRESOURCE_DATA = 'planetadeleste.apiOrdersShopaholic.itemResourceData';
+
     public $require = [
         'Lovata.OrdersShopaholic',
         'PlanetaDelEste.ApiToolbox'

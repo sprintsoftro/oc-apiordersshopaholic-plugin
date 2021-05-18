@@ -11,6 +11,9 @@ use Lovata\OrdersShopaholic\Models\OrderPosition;
 use Lovata\OrdersShopaholic\Models\PaymentMethod;
 use Lovata\OrdersShopaholic\Models\Status;
 use October\Rain\Events\Dispatcher;
+use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\UserAddress\IndexCollection;
+use PlanetaDelEste\ApiShopaholic\Classes\Resource\User\ItemResource;
+use PlanetaDelEste\ApiShopaholic\Plugin as PluginApiShopaholic;
 use PlanetaDelEste\ApiToolbox\Plugin;
 
 class ApiShopaholicHandler
@@ -21,6 +24,17 @@ class ApiShopaholicHandler
             Plugin::EVENT_API_ADD_COLLECTION,
             function () {
                 return $this->addCollections();
+            }
+        );
+
+        $obEvent->listen(
+            PluginApiShopaholic::EVENT_ITEMRESOURCE_DATA.'.user',
+            function (ItemResource $obItemResource, $arData) {
+                return [
+                    'address' => $obItemResource->address
+                        ? IndexCollection::make(collect($obItemResource->address))
+                        : null
+                ];
             }
         );
     }
