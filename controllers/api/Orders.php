@@ -3,14 +3,17 @@
 use Event;
 use Exception;
 use Kharanenka\Helper\Result;
+use Lovata\OrdersShopaholic\Classes\Collection\OrderCollection;
 use Lovata\OrdersShopaholic\Components\MakeOrder;
 use Lovata\OrdersShopaholic\Models\Order;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Order\IndexCollection;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Order\ListCollection;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Order\ShowResource;
+use PlanetaDelEste\ApiOrdersShopaholic\Classes\Store\OrderListStore;
 use PlanetaDelEste\ApiOrdersShopaholic\Plugin;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\OrderPosition\IndexCollection as OrderPositionIndexCollection;
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
+use PlanetaDelEste\ApiToolbox\Plugin as ApiToolboxPlugin;
 
 /**
  * Class Orders
@@ -20,20 +23,22 @@ use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
  */
 class Orders extends Base
 {
-    public $primaryKey = 'secret_key';
-
-    /**
-     * @return \Illuminate\Http\JsonResponse|void
-     */
-    public function extendIndex()
+    public function init()
     {
-        try {
-            $this->currentUser();
-            $this->collection->user($this->user->id);
-        } catch (Exception $e) {
-            Result::setFalse()->setMessage($e->getMessage());
-            return response()->json(Result::get(), 403);
-        }
+        $this->bindEvent(
+            ApiToolboxPlugin::EVENT_LOCAL_EXTEND_INDEX,
+            function (OrderCollection $obCollection) {
+                try {
+                    $this->currentUser();
+                    if (!$this->isBackend()) {
+                        $obCollection->user($this->user->id);
+                    }
+                } catch (Exception $e) {
+                    Result::setFalse()->setMessage($e->getMessage());
+                    return response()->json(Result::get(), 403);
+                }
+            }
+        );
     }
 
     /**
@@ -109,5 +114,15 @@ class Orders extends Base
     public function getShowResource(): string
     {
         return ShowResource::class;
+    }
+
+    public function getPrimaryKey(): string
+    {
+        return $this->isBackend() ? 'id' : 'secret_key';
+    }
+
+    public function getSortColumn(): string
+    {
+        return OrderListStore::SORT_CREATED_AT_DESC;
     }
 }
