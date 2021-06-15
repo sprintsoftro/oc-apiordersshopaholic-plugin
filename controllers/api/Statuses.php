@@ -14,4 +14,9 @@ class Statuses extends Base
     {
         return Status::class;
     }
+
+    public function getSortColumn(): string
+    {
+        return 'sort';
+    }
 }
