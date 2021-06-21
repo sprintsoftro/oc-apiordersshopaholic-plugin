@@ -4,11 +4,23 @@ Route::prefix('orders')
     ->group(
         function () {
             Route::post('create', 'Orders@create')->name('create');
-            Route::get('{id}/position', 'Orders@positions')->name('position');
+            Route::get('{id}/position', 'Positions@index')->name('position');
             Route::any('ipn', 'Orders@ipn')->name('ipn');
             Route::apiResource('status', 'Statuses', ['only' => ['index', 'show']]);
 
             if (has_jwtauth_plugin()) {
+                Route::apiResource(
+                    'positions',
+                    'Positions',
+                    [
+                        'only' => [
+                            'store',
+                            'update',
+                            'destroy'
+                        ]
+                    ]
+                );
+
                 Route::apiResource(
                     'status',
                     'Statuses',
