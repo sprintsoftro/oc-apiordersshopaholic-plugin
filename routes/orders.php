@@ -3,7 +3,9 @@ Route::prefix('orders')
     ->name('orders.')
     ->group(
         function () {
-            Route::post('create', 'Orders@create')->name('create');
+            Route::post('create', 'Orders@create')
+                ->middleware(['web'])
+                ->name('create');
             Route::get('{id}/position', 'Positions@index')->name('position');
             Route::any('ipn', 'Orders@ipn')->name('ipn');
             Route::apiResource('status', 'Statuses', ['only' => ['index', 'show']]);

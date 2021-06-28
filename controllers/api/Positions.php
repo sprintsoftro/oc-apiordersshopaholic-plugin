@@ -3,6 +3,7 @@
 use Exception;
 use Kharanenka\Helper\Result;
 use Lovata\OrdersShopaholic\Classes\Item\OrderItem;
+use Lovata\OrdersShopaholic\Models\Order;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\OrderPosition\IndexCollection as OrderPositionIndexCollection;
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
 use Lovata\OrdersShopaholic\Models\OrderPosition;
@@ -21,6 +22,10 @@ class Positions extends Base
            $iOrderId = func_get_arg(0);
            if (!$iOrderId) {
                throw new Exception(static::ALERT_RECORD_NOT_FOUND, 403);
+           }
+
+           if (!$this->isBackend() && !is_numeric($iOrderId)) {
+               $iOrderId = Order::getBySecretKey($iOrderId)->first(['id'])->id;
            }
 
            /** @var \Lovata\OrdersShopaholic\Classes\Item\OrderItem $obOrderItem */
