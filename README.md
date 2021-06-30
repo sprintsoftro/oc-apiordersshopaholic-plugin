@@ -26,7 +26,7 @@ To install it with **Composer**, run `composer require planetadeleste/oc-orderss
 
 ##### Add offer
 
-`POST: /api/v1/cart/add?{{ params }}`
+`POST: /api/v1/cart/add`
 
 ```json
 let params = {
@@ -42,7 +42,7 @@ let params = {
 
 ##### Update offers
 
-`POST: /api/v1/cart/add?{{ params }}`
+`POST: /api/v1/cart/add`
 
 ```json
 let params = {
@@ -64,7 +64,7 @@ let params = {
 
 ##### Update cart position
 
-`POST: /api/v1/cart/add?{{ params }}`
+`POST: /api/v1/cart/add`
 
 ```json
 let params = {
@@ -88,7 +88,7 @@ let params = {
 
 ##### Remove offer
 
-`POST: /api/v1/cart/add?{{ params }}`
+`POST: /api/v1/cart/add`
 
 ```json
 let params = {
@@ -100,6 +100,28 @@ let params = {
   'payment_method_id': 3
 };
 ```
+
+##### Checkout - Make order
+
+`POST: /api/v1/order/create`
+
+```json
+let params = {
+    'order': {
+        'payment_method_id': 'Integer',     //Get value from radio button with name="payment_method"
+        'shipping_type_id': 'Integer',      //Get value from radio button with name="shipping_type"
+        'property': {
+            'address': 'String',         //Get value from input with name="address"
+        }
+    },
+    'user': {
+        'email': 'String',                 //Get value from input with name="email"
+        'name': 'String',                  //Get value from input with name="name"
+        'phone': 'Integer',                 //Get value from input with name="phone"
+    }
+};
+```
+
 
 ### Usage
 Coming soon
