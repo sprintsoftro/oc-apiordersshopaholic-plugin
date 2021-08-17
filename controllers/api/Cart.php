@@ -15,7 +15,7 @@ class Cart extends Base
      */
     public function getData(): array
     {
-        return $this->cartComponent()->onGetCartData();
+        return $this->get();
     }
 
     /**
@@ -80,19 +80,23 @@ class Cart extends Base
             foreach ($obCartPositionCollection as $obCartPositionItem) {
                 /** @var \Lovata\OrdersShopaholic\Classes\Item\CartPositionItem $obCartPositionItem */
                 /** @var \Lovata\Shopaholic\Models\Offer $obOfferModel */
+                // dd($obCartPositionItem);
 
                 $obOffer = $obCartPositionItem->offer;
 //                $obOfferModel = $obOffer->getObject();
                 $arCartDataPositions[] = [
                     'offer'                => ShowResourceOffer::make($obOffer),
                     'product'              => ItemResourceProduct::make($obOffer->product),
-                    'price'                => $obOffer->price,
-                    'currency'             => $obOffer->currency,
-                    'total'                => $obCartPositionItem->price,
-                    'total_value'          => $obCartPositionItem->price_value,
-                    'quantity'             => $obCartPositionItem->quantity,
                     'price_per_unit'       => $obCartPositionItem->price_per_unit,
                     'price_per_unit_value' => $obCartPositionItem->price_per_unit_value,
+                    'price_per_unit_without_tax'    => $obCartPositionItem->price_per_unit_without_tax,
+                    'price_per_unit_without_tax_value'  => $obCartPositionItem->price_per_unit_without_tax_value,
+                    'total'                => $obCartPositionItem->price,
+                    'total_value'          => $obCartPositionItem->price_value,
+                    'price_without_tax'     => $obCartPositionItem->price_without_tax,
+                    'price_without_tax_value'     => $obCartPositionItem->price_without_tax_value,
+                    'quantity'             => $obCartPositionItem->quantity,
+                    'currency'             => $obOffer->currency,
                 ];
             }
 
@@ -101,6 +105,7 @@ class Cart extends Base
                 'currency'    => $obCartPositionCollection->getCurrency(),
                 'total'       => $obCartPositionCollection->getTotalPrice(),
                 'total_value' => $obCartPositionCollection->getTotalPriceValue(),
+                'total_price' => $this->cartComponent()->onGetData()['total_price'],
             ];
         }
 
