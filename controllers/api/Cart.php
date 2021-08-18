@@ -99,13 +99,18 @@ class Cart extends Base
                     'currency'             => $obOffer->currency,
                 ];
             }
+            dd($this->cartComponent()->onGetData());
+
+            $arCartDataPrices = $this->cartComponent()->onGetData();
 
             $arCartData = [
-                'positions'   => $arCartDataPositions,
-                'currency'    => $obCartPositionCollection->getCurrency(),
-                'total'       => $obCartPositionCollection->getTotalPrice(),
-                'total_value' => $obCartPositionCollection->getTotalPriceValue(),
-                'total_price' => $this->cartComponent()->onGetData()['total_price'],
+                'positions'         => $arCartDataPositions,
+                'currency'          => $obCartPositionCollection->getCurrency(),
+                'total'             => $obCartPositionCollection->getTotalPrice(),
+                'total_value'       => $obCartPositionCollection->getTotalPriceValue(),
+                'quantity'          => $arCartDataPrices['quantity'],
+                'total_quantity'    => $arCartDataPrices['total_quantity'],
+                'total_price'       => $arCartDataPrices['total_price'],
             ];
         }
 
