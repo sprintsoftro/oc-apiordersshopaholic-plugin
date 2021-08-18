@@ -99,7 +99,6 @@ class Cart extends Base
                     'currency'             => $obOffer->currency,
                 ];
             }
-            dd($this->cartComponent()->onGetData());
 
             $arCartDataPrices = $this->cartComponent()->onGetData();
 
