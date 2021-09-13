@@ -42,7 +42,7 @@ let params = {
 
 ##### Update offers
 
-`POST: /api/v1/cart/add`
+`POST: /api/v1/cart/update`
 
 ```json
 let params = {
@@ -64,7 +64,7 @@ let params = {
 
 ##### Update cart position
 
-`POST: /api/v1/cart/add`
+`POST: /api/v1/cart/update`
 
 ```json
 let params = {

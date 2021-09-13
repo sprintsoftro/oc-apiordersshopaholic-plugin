@@ -1,11 +1,14 @@
 <?php namespace PlanetaDelEste\ApiOrdersShopaholic\Controllers\Api;
 
+use Input;
 use Kharanenka\Helper\Result;
 use Lovata\OrdersShopaholic\Classes\Item\ShippingTypeItem;
 use Lovata\OrdersShopaholic\Components\Cart as CartComponent;
 use PlanetaDelEste\ApiShopaholic\Classes\Resource\Offer\ShowResource as ShowResourceOffer;
 use PlanetaDelEste\ApiShopaholic\Classes\Resource\Product\ItemResource as ItemResourceProduct;
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
+use Lovata\OrdersShopaholic\Classes\Processor\CartProcessor;
+use Lovata\OrdersShopaholic\Classes\Processor\OfferCartPositionProcessor;
 
 class Cart extends Base
 {
@@ -25,7 +28,23 @@ class Cart extends Base
      */
     public function add(): array
     {
-        $response = $this->cartComponent()->onAdd();
+
+        $arRequestData = Input::get('cart');
+        $obCartData = $this->cartComponent()->onGetCartData();
+        $arCartProducts = [];
+        foreach($obCartData['data']['position'] as $obPosition) {
+            $obCartProducts[$obPosition['item_id']] = $obPosition;
+            $arCartProducts[] = $obPosition['item_id'];
+        }
+        foreach($arRequestData as $key => $cartItem) {
+            if(in_array($cartItem['offer_id'], $arCartProducts)) {
+                $arRequestData[$key]['quantity'] += $obCartProducts[$cartItem['offer_id']]['quantity'];
+            }
+        }
+        CartProcessor::instance()->add($arRequestData, OfferCartPositionProcessor::class);
+        Result::setData(CartProcessor::instance()->getCartData());
+
+        $response =  Result::get();
         if (!input('return_data')) {
             return $this->get();
         }
