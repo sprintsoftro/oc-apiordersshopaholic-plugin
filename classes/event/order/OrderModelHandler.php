@@ -27,7 +27,7 @@ class OrderModelHandler extends ModelHandler
             }
         );
 
-        $obEvent->listen(OrderProcessor::EVENT_ORDER_CREATED, function ($obOrder) {
+        $obEvent->listen(OrderProcessor::EVENT_UPDATE_ORDER_AFTER_CREATE, function ($obOrder) {
             $this->sendOrderToPortalAfterCreating($obOrder);
         });
     }
@@ -94,14 +94,14 @@ class OrderModelHandler extends ModelHandler
      * Send order data to portal through API 
      */
     protected function sendOrderToPortalAfterCreating($obOrder) {
-
+        
         // Init billing data array
         $arBilling = [
             'first_name'    => $obOrder->getProperty('name'),
             'last_name'     => $obOrder->getProperty('last_name'),
             'company'       => $obOrder->getProperty('name'),
-            'cui'           => $obOrder->getProperty('reg_j'),
-            'reg_com'       => $obOrder->getProperty('last_name'),
+            'cui'           => $obOrder->getProperty('billing_cui'),
+            'reg_com'       => $obOrder->getProperty('billing_reg_j'),
             'street'        => $obOrder->getProperty('billing_street'),
             'number'        => $obOrder->getProperty('billing_house'),
             'apartment'     => $obOrder->getProperty('billing_flat'),
@@ -130,8 +130,9 @@ class OrderModelHandler extends ModelHandler
                 'phone'         => $obOrder->getProperty('shipping_phone')           
             ];    
         }
-            // Init line items array
-            $orderPositions = $obOrder->order_position;
+
+        // Init line items array
+        $orderPositions = $obOrder->order_position;
             
         foreach ($orderPositions as $orderPosition) {   
             $obOffer = $orderPosition->item; 
@@ -144,9 +145,9 @@ class OrderModelHandler extends ModelHandler
 
         // Init Api post data
         $postData = [
-            'payment_method' => 'ramburs',
-            'customer_note' => $obOrder->comments,
-            'client_type' => 'fizica',
+            'payment_method' => $obOrder->payment_method->code,
+            'customer_note' => $obOrder->getProperty('comments'),
+            'client_type' => $obOrder->getProperty('client_type'),
             'billing' => $arBilling,
             'line_items' => $arLineItems,
         ];
@@ -158,7 +159,14 @@ class OrderModelHandler extends ModelHandler
         // Send POST request
         $response = $this->initCurlRequest($postData);
 
-        // TODO::Trebuie preluat din response numarul de comanda pentru afisare la success comanda
+        // On Success replace order_number
+        if($response->status == 'success') {
+            $orderNumber = $response->details->order_number;
+
+            $obOrder->order_number = $orderNumber;
+        } else {
+            dd(array('portal_api_error' => $response));
+        }
     }
 
     private function initCurlRequest($postData) {
