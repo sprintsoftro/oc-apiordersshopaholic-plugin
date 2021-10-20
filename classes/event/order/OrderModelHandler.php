@@ -28,7 +28,7 @@ class OrderModelHandler extends ModelHandler
         );
 
         $obEvent->listen(OrderProcessor::EVENT_UPDATE_ORDER_AFTER_CREATE, function ($obOrder) {
-            $this->sendOrderToPortalAfterCreating($obOrder);
+            // $this->sendOrderToPortalAfterCreating($obOrder);
         });
     }
 
@@ -91,10 +91,10 @@ class OrderModelHandler extends ModelHandler
     }
 
         /**
-     * Send order data to portal through API 
+     * Send order data to portal through API
      */
     protected function sendOrderToPortalAfterCreating($obOrder) {
-        
+
         // Init billing data array
         $arBilling = [
             'first_name'    => $obOrder->getProperty('name'),
@@ -127,15 +127,15 @@ class OrderModelHandler extends ModelHandler
                 'city'          => $obOrder->getProperty('shipping_city'),
                 'county'        => $obOrder->getProperty('shipping_state'),
                 'postcode'      => $obOrder->getProperty('shipping_postcode'),
-                'phone'         => $obOrder->getProperty('shipping_phone')           
-            ];    
+                'phone'         => $obOrder->getProperty('shipping_phone')
+            ];
         }
 
         // Init line items array
         $orderPositions = $obOrder->order_position;
-            
-        foreach ($orderPositions as $orderPosition) {   
-            $obOffer = $orderPosition->item; 
+
+        foreach ($orderPositions as $orderPosition) {
+            $obOffer = $orderPosition->item;
             $obProduct = $obOffer->product;
             $arLineItems[] = [
                 'product_id' => $obProduct->external_id,
@@ -155,7 +155,7 @@ class OrderModelHandler extends ModelHandler
         if($obOrder->getProperty('shipping_state')) {
             $postData['shipping'] = $arShipping;
         }
-        
+
         // Send POST request
         $response = $this->initCurlRequest($postData);
 
@@ -190,9 +190,9 @@ class OrderModelHandler extends ModelHandler
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
-        
+
         curl_close($curl);
-        
+
         if ($err) {
             return "cURL Error #:" . $err;
         } else {

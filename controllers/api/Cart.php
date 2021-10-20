@@ -33,8 +33,10 @@ class Cart extends Base
         $obCartData = $this->cartComponent()->onGetCartData();
         $arCartProducts = [];
         foreach($obCartData['data']['position'] as $obPosition) {
-            $obCartProducts[$obPosition['item_id']] = $obPosition;
-            $arCartProducts[] = $obPosition['item_id'];
+            if(empty($obPosition['property'])) {
+                $obCartProducts[$obPosition['item_id']] = $obPosition;
+                $arCartProducts[] = $obPosition['item_id'];
+            }
         }
         foreach($arRequestData as $key => $cartItem) {
             if(in_array($cartItem['offer_id'], $arCartProducts)) {
@@ -101,6 +103,7 @@ class Cart extends Base
                 /** @var \Lovata\Shopaholic\Models\Offer $obOfferModel */
                 // dd($obCartPositionItem);
 
+                // dd($obCartPositionItem);
                 $obOffer = $obCartPositionItem->offer;
 //                $obOfferModel = $obOffer->getObject();
                 $arCartDataPositions[] = [
@@ -116,6 +119,7 @@ class Cart extends Base
                     'price_without_tax_value'     => $obCartPositionItem->price_without_tax_value,
                     'quantity'             => $obCartPositionItem->quantity,
                     'currency'             => $obOffer->currency,
+                    'property'             => $obCartPositionItem->property,
                 ];
             }
 
