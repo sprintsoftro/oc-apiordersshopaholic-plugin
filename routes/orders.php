@@ -6,6 +6,9 @@ Route::prefix('orders')
             Route::post('create', 'Orders@create')
                 ->middleware(['web'])
                 ->name('create');
+            Route::post('fast-order', 'Orders@fastOrder')
+                ->middleware(['web'])
+                ->name('fast-order');
             Route::get('{id}/position', 'Positions@index')->name('position');
             Route::any('ipn', 'Orders@ipn')->name('ipn');
             Route::apiResource('status', 'Statuses', ['only' => ['index', 'show']]);

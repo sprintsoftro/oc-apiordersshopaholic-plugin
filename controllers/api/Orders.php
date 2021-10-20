@@ -1,10 +1,12 @@
 <?php namespace PlanetaDelEste\ApiOrdersShopaholic\Controllers\Api;
 
 use Event;
+use Input;
 use Exception;
 use Kharanenka\Helper\Result;
 use Lovata\OrdersShopaholic\Classes\Collection\OrderCollection;
 use Lovata\OrdersShopaholic\Components\MakeOrder;
+use Lovata\OrdersShopaholic\Components\Cart as CartComponent;
 use Lovata\OrdersShopaholic\Models\Order;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Order\IndexCollection;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Order\ListCollection;
@@ -14,6 +16,9 @@ use PlanetaDelEste\ApiOrdersShopaholic\Plugin;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\OrderPosition\IndexCollection as OrderPositionIndexCollection;
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
 use PlanetaDelEste\ApiToolbox\Plugin as ApiToolboxPlugin;
+
+use Lovata\OrdersShopaholic\Classes\Processor\CartProcessor;
+use Lovata\OrdersShopaholic\Classes\Processor\OfferCartPositionProcessor;
 
 /**
  * Class Orders
@@ -66,6 +71,63 @@ class Orders extends Base
         }
 
         return Result::get();
+    }
+
+    /**
+     * @return array|\Illuminate\Http\RedirectResponse
+     * @throws \SystemException
+     * @throws \Exception
+     */
+    public function fastOrder()
+    {
+
+        $obOldCart = $this->cartComponent()->onGetCartData();
+        // preluam id-urile pozitiolor actuale
+        $arPositionToDelete = [];
+        foreach ($obOldCart['data']['position'] as $position) {
+            $arPositionToDelete[] = $position['id'];
+        }
+        // adaugam produsul curent si le stergem pe celelalte
+        $this->cartComponent()->onSync();
+
+        // finalizam cosul de cumparaturi
+        /** @var MakeOrder $obComponent */
+        $obComponent = $this->component(MakeOrder::class);
+        $obComponent->onCreate();
+        $arResponseData = Event::fire(Plugin::EVENT_API_ORDER_RESPONSE_DATA, [Result::data()]);
+
+        if (!empty($arResponseData)) {
+            $arResultData = Result::data();
+            foreach ($arResponseData as $arData) {
+                if (empty($arData) || !is_array($arData)) {
+                    continue;
+                }
+                $arResultData = array_merge($arResultData, $arData);
+            }
+
+            Result::setData($arResultData);
+        }
+        $responseCart =  Result::get();
+
+        // readaugam produsel in cos
+        if(!empty($arPositionToDelete)) {
+
+            CartProcessor::instance()->restore($arPositionToDelete, OfferCartPositionProcessor::class);
+            Result::setData(CartProcessor::instance()->getCartData());
+        }
+
+        if(!empty($responseCart['data'])) {
+            return [
+                'message' => 'Cererea dumneavoastra a fost trimisa. Va multumim!',
+                'order_id' => $responseCart['data']['id']
+            ];
+        } else {
+            return [
+                'message' => $responseCart['message'],
+                'order_id' => null
+            ];
+
+        }
     }
 
     public function positions($sValue)
@@ -124,5 +186,15 @@ class Orders extends Base
     public function getSortColumn(): string
     {
         return OrderListStore::SORT_CREATED_AT_DESC;
+    }
+
+
+    /**
+     * @return \Cms\Classes\ComponentBase|\Lovata\OrdersShopaholic\Components\Cart
+     * @throws \SystemException
+     */
+    protected function cartComponent()
+    {
+        return $this->component(CartComponent::class);
     }
 }
