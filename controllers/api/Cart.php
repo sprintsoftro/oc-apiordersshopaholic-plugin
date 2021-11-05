@@ -107,6 +107,7 @@ class Cart extends Base
                 $obOffer = $obCartPositionItem->offer;
 //                $obOfferModel = $obOffer->getObject();
                 $arCartDataPositions[] = [
+                    'id'       => $obCartPositionItem->id,
                     'offer'                => ShowResourceOffer::make($obOffer),
                     'product'              => ItemResourceProduct::make($obOffer->product),
                     'price_per_unit'       => $obCartPositionItem->price_per_unit,
