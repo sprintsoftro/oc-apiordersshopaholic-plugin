@@ -20,6 +20,9 @@ use PlanetaDelEste\ApiToolbox\Plugin as ApiToolboxPlugin;
 use Lovata\OrdersShopaholic\Classes\Processor\CartProcessor;
 use Lovata\OrdersShopaholic\Classes\Processor\OfferCartPositionProcessor;
 
+use Multiwebinc\Recaptcha\Validators\RecaptchaValidator;
+use System\Models\EventLog;
+
 /**
  * Class Orders
  *
@@ -81,7 +84,14 @@ class Orders extends Base
     public function fastOrder()
     {
 
+        if(!$this->validateRecaptcha()) {
+            return response()->json([
+                'error' => 'invalid recaptcha',
+            ], 403);
+        }
+
         $obOldCart = $this->cartComponent()->onGetCartData();
+
         // preluam id-urile pozitiolor actuale
         $arPositionToDelete = [];
         foreach ($obOldCart['data']['position'] as $position) {
@@ -196,5 +206,18 @@ class Orders extends Base
     protected function cartComponent()
     {
         return $this->component(CartComponent::class);
+    }
+
+    protected function validateRecaptcha() 
+    {   
+        $postData = Input::get();
+        
+        if(!isset($postData['token'])) {
+            EventLog::add('Post Contact Form HTTP request Failed', 'error', 'recaptcha missing token');
+            return false;
+        }
+
+        $recaptchaValidator = new RecaptchaValidator();
+        return $recaptchaValidator->validate('g-recaptcha-response', $postData['token'], '');
     }
 }
