@@ -173,7 +173,7 @@ class OrderModelHandler extends ModelHandler
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-        CURLOPT_URL => 'local.pefoc.ro/api/v1/post-order',
+        CURLOPT_URL => config('api.base_url').'/api/v1/post-order',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -183,7 +183,7 @@ class OrderModelHandler extends ModelHandler
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => json_encode($postData),
         CURLOPT_HTTPHEADER => array(
-            'PEFOC-API-KEY: 132dfeeae2323ec13ca0e37b91d4bad3',
+            config('api.key_name').': '.config('api.key'),
             'Content-Type: application/json; charset=utf8'
         ),
         ));
