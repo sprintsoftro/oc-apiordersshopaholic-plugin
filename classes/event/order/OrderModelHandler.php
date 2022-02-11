@@ -134,6 +134,8 @@ class OrderModelHandler extends ModelHandler
         // Init line items array
         $orderPositions = $obOrder->order_position;
 
+        $enquiry = false;
+
         foreach ($orderPositions as $orderPosition) {
             $obOffer = $orderPosition->item;
             // dump($obOffer);
@@ -148,15 +150,21 @@ class OrderModelHandler extends ModelHandler
                 "custom_price" => $custom_price,
                 "custom_options" => $custom_options,
             ];
+            if($orderPosition->property) {
+                if(isset($orderPosition->property['offer'])) {
+                    $enquiry = true;
+                }
+            }
         }
 
         // Init Api post data
         $postData = [
-            'payment_method' => $obOrder->payment_method->code,
+            'payment_method' => $obOrder->payment_method ? $obOrder->payment_method->code : '',
             'customer_note' => $obOrder->getProperty('comments'),
-            'client_type' => $obOrder->getProperty('client_type'),
+            'client_type' => $enquiry ? 'fizica' : $obOrder->getProperty('client_type'),
             'billing' => $arBilling,
             'line_items' => $arLineItems,
+            'enquiry' => $enquiry
         ];
 
         if($obOrder->getProperty('shipping_state')) {
@@ -167,7 +175,7 @@ class OrderModelHandler extends ModelHandler
         $response = $this->initCurlRequest($postData);
 
         // On Success replace order_number
-        if($response->status == 'success') {
+        if($response && $response->status == 'success') {
             $orderNumber = $response->details->order_number;
 
             $obOrder->order_number = $orderNumber;
