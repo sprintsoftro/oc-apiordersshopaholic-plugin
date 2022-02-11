@@ -28,7 +28,7 @@ class OrderModelHandler extends ModelHandler
         );
 
         $obEvent->listen(OrderProcessor::EVENT_UPDATE_ORDER_AFTER_CREATE, function ($obOrder) {
-            // $this->sendOrderToPortalAfterCreating($obOrder);
+            $this->sendOrderToPortalAfterCreating($obOrder);
         });
     }
 
@@ -136,10 +136,17 @@ class OrderModelHandler extends ModelHandler
 
         foreach ($orderPositions as $orderPosition) {
             $obOffer = $orderPosition->item;
+            // dump($obOffer);
             $obProduct = $obOffer->product;
+            $custom_name = $orderPosition->getProperty('custom-name');
+            $custom_price = $orderPosition->getProperty('custom-price');
+            $custom_options = $orderPosition->getProperty('custom-options');
             $arLineItems[] = [
                 'product_id' => $obProduct->external_id,
-                'quantity' => $orderPosition->quantity
+                'quantity' => $orderPosition->quantity,
+                "custom_name" => $custom_name,
+                "custom_price" => $custom_price,
+                "custom_options" => $custom_options,
             ];
         }
 
