@@ -6,6 +6,7 @@ use Lovata\Toolbox\Classes\Event\ModelHandler;
 use Lovata\OrdersShopaholic\Models\Order;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Store\OrderListStore;
 use Lovata\OrdersShopaholic\Classes\Processor\OrderProcessor;
+use Sprintsoft\ApiGeneral\Models\ConfiguratorStep;
 
 /**
  * Class OrderModelHandler
@@ -138,17 +139,19 @@ class OrderModelHandler extends ModelHandler
 
         foreach ($orderPositions as $orderPosition) {
             $obOffer = $orderPosition->item;
-            // dump($obOffer);
             $obProduct = $obOffer->product;
             $custom_name = $orderPosition->getProperty('custom-name');
             $custom_price = $orderPosition->getProperty('custom-price');
+            $custom_quantity = $orderPosition->getProperty('custom-quantity');
             $custom_options = $orderPosition->getProperty('custom-options');
+            
             $arLineItems[] = [
                 'product_id' => $obProduct->external_id,
                 'quantity' => $orderPosition->quantity,
                 "custom_name" => $custom_name,
                 "custom_price" => $custom_price,
-                "custom_options" => $custom_options,
+                "custom_quantity" => $custom_quantity,
+                "custom_options" => $this->formatOptions($custom_options, $obProduct),
             ];
             if($orderPosition->property) {
                 if(isset($orderPosition->property['offer'])) {
@@ -223,5 +226,44 @@ class OrderModelHandler extends ModelHandler
         parent::afterDelete();
 
         $this->clearBySortingPublished();
+    }
+
+    /**
+     * Formatare optiuni pentru functionare corecta in octav
+     */
+    protected function formatOptions($custom_options, $obProduct) 
+    {
+
+        $newCustomOptions = json_decode($custom_options);
+        
+        // Formatare Optiuni Configurator Cos de fum pentru functionare corecta in Octav
+        if(isset($obProduct->property['347']) && $obProduct->property['347'] == 'custom-hoch') {
+
+            $custom_options = json_decode($custom_options);
+            $newCustomOptions = [];
+            foreach ($custom_options as $option) {
+
+                $stepName = ConfiguratorStep::where('id', $option->step)->value('name');
+ 
+                // Pentru nush ce motiv ultimul sau unul din pasi are value ca array
+                if(is_array($option->value)) {
+                    $option->value = $option->value[0];
+                }
+
+                $stepName = str_replace('/', '-', $stepName);
+                $name = str_replace('/', '-', $option->value->name);
+
+                $newCustomOptions[] = [
+                    'step_id' => $option->step,
+                    'step_name' => $stepName,
+                    'id' => $option->value->id,
+                    'name' => $name
+                ];
+            }
+            
+            $newCustomOptions = ['cos_de_fum' => $newCustomOptions];
+        }
+
+        return $newCustomOptions;
     }
 }
