@@ -96,6 +96,13 @@ class OrderModelHandler extends ModelHandler
      */
     protected function sendOrderToPortalAfterCreating($obOrder) {
 
+        $email = $obOrder->getProperty('email');
+
+        // If is fake generated send it empty to portal
+        if(strpos($email, 'fake.com') !== FALSE) {
+            $email = '';
+        }
+        
         // Init billing data array
         $arBilling = [
             'first_name'    => $obOrder->getProperty('name'),
@@ -111,7 +118,7 @@ class OrderModelHandler extends ModelHandler
             'city'          => $obOrder->getProperty('billing_city'),
             'county'        => $obOrder->getProperty('billing_state'),
             'postcode'      => $obOrder->getProperty('billing_postcode'),
-            'email'         => $obOrder->getProperty('email'),
+            'email'         => $email,
             'phone'         => $obOrder->getProperty('phone')
         ];
 
