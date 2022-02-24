@@ -148,15 +148,15 @@ class OrderModelHandler extends ModelHandler
             $obOffer = $orderPosition->item;
             $obProduct = $obOffer->product;
             $custom_name = $orderPosition->getProperty('custom-name');
-            $custom_price = $orderPosition->getProperty('custom-price');
-            $custom_quantity = $orderPosition->getProperty('custom-quantity');
+            $custom_price = (float)$orderPosition->getProperty('custom-price');
+            $custom_quantity = (float)$orderPosition->getProperty('custom-quantity');
             $custom_options = $orderPosition->getProperty('custom-options');
             
             $arLineItems[] = [
                 'product_id' => $obProduct->external_id,
                 'quantity' => $orderPosition->quantity,
                 "custom_name" => $custom_name,
-                "custom_price" => $custom_price,
+                "custom_price" => $custom_quantity > 0 ? $custom_price/$custom_quantity : $custom_price,
                 "custom_quantity" => $custom_quantity,
                 "custom_options" => $this->formatOptions($custom_options, $obProduct),
             ];
