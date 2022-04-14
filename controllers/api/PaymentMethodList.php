@@ -15,7 +15,7 @@ class PaymentMethodList extends Base
     {
         /** @var PaymentMethodListComponent $obPaymentListComponent */
         $obPaymentListComponent = $this->component(PaymentMethodListComponent::class);
-        $obPaymentMethodList = $obPaymentListComponent->make()->sort()->active();
+        $obPaymentMethodList = $obPaymentListComponent->make()->sort()->active()->available();
 
         return Result::setData($obPaymentMethodList->toArray())->get();
     }
