@@ -170,6 +170,8 @@ class OrderModelHandler extends ModelHandler
         // Init Api post data
         $postData = [
             'payment_method' => $obOrder->payment_method ? $obOrder->payment_method->code : '',
+            'shipping_price' => $obOrder->shipping_price ? $obOrder->shipping_price : '',
+            'tax_ramburs' => $obOrder->payment_method->code == "ramburs" ? 5 : 0,
             'customer_note' => $obOrder->getProperty('comments'),
             'client_type' => $enquiry ? 'fizica' : $obOrder->getProperty('client_type'),
             'billing' => $arBilling,

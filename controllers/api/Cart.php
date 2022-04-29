@@ -9,6 +9,7 @@ use PlanetaDelEste\ApiShopaholic\Classes\Resource\Product\ItemResource as ItemRe
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
 use Lovata\OrdersShopaholic\Classes\Processor\CartProcessor;
 use Lovata\OrdersShopaholic\Classes\Processor\OfferCartPositionProcessor;
+use Lovata\OrdersShopaholic\Components\ShippingTypeList as ShippingTypeListComponent;
 
 class Cart extends Base
 {
@@ -16,9 +17,13 @@ class Cart extends Base
      * @return array
      * @throws \SystemException
      */
-    public function getData(): array
+    public function getData($paymentMethodId = null): array
     {
-        return $this->get();
+        /** @var ShippingTypeListComponent $obShippingTypeListComponent */
+        $obShippingTypeListComponent = $this->component(ShippingTypeListComponent::class);
+        $obShippingTypeList = $obShippingTypeListComponent->make()->sort()->active()->available()->first();
+        // dd($obShippingTypeList);
+        return $this->get($obShippingTypeList->id, $paymentMethodId);
     }
 
     /**
@@ -64,7 +69,7 @@ class Cart extends Base
     {
         $response = $this->cartComponent()->onUpdate();
         if (!input('return_data')) {
-            return $this->get();
+            return $this->getData();
         }
 
         return $response;
@@ -91,10 +96,12 @@ class Cart extends Base
      * @throws \SystemException
      * @throws \Exception
      */
-    public function get($iShippingTypeId = null): array
+    public function get($iShippingTypeId = null, $iPaymentMethodId = null): array
     {
         $obShippingTypeItem = $iShippingTypeId ? ShippingTypeItem::make($iShippingTypeId) : null;
-        $obCartPositionCollection = $this->cartComponent()->get($obShippingTypeItem);
+        $obPaymentMethodItem = $iPaymentMethodId ? ShippingTypeItem::make($iPaymentMethodId) : null;
+        $obCartPositionCollection = $this->cartComponent()->get($obShippingTypeItem, $obPaymentMethodItem);
+
         $arCartData = [];
         if ($obCartPositionCollection->isNotEmpty()) {
             $arCartDataPositions = [];
@@ -134,6 +141,10 @@ class Cart extends Base
                 'quantity'          => $arCartDataPrices['quantity'],
                 'total_quantity'    => $arCartDataPrices['total_quantity'],
                 'total_price'       => $arCartDataPrices['total_price'],
+                'position_total_price'       => $arCartDataPrices['position_total_price'],
+                'shipping_price'       => $arCartDataPrices['shipping_price'],
+                'shipping_type_id'       => $arCartDataPrices['shipping_type_id'],
+                'payment_method_id'       => $arCartDataPrices['payment_method_id'],
             ];
         }
 
