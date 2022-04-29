@@ -28,7 +28,7 @@ class OrderModelHandler extends ModelHandler
             }
         );
 
-        $obEvent->listen(OrderProcessor::EVENT_UPDATE_ORDER_AFTER_CREATE, function ($obOrder) {
+        $obEvent->listen(OrderProcessor::EVENT_ORDER_CREATED, function ($obOrder) {
             $this->sendOrderToPortalAfterCreating($obOrder);
         });
     }
@@ -102,7 +102,7 @@ class OrderModelHandler extends ModelHandler
         if(strpos($email, 'fake.com') !== FALSE) {
             $email = '';
         }
-        
+
         // Init billing data array
         $arBilling = [
             'first_name'    => $obOrder->getProperty('name'),
@@ -151,7 +151,7 @@ class OrderModelHandler extends ModelHandler
             $custom_price = (float)$orderPosition->getProperty('custom-price');
             $custom_quantity = (float)$orderPosition->getProperty('custom-quantity');
             $custom_options = $orderPosition->getProperty('custom-options');
-            
+
             $arLineItems[] = [
                 'product_id' => $obProduct->external_id,
                 'quantity' => $orderPosition->quantity,
@@ -170,8 +170,8 @@ class OrderModelHandler extends ModelHandler
         // Init Api post data
         $postData = [
             'payment_method' => $obOrder->payment_method ? $obOrder->payment_method->code : '',
-            'shipping_price' => $obOrder->shipping_price ? $obOrder->shipping_price : '',
-            'tax_ramburs' => $obOrder->payment_method->code == "ramburs" ? 5 : 0,
+            'shipping_price' => !empty($obOrder->getOriginal()['shipping_price']) ? $obOrder->getOriginal()['shipping_price'] : '',
+            'tax_ramburs' => !empty($obOrder->getOriginal()['shipping_price']) && $obOrder->shipping_price ? $obOrder->shipping_price - $obOrder->getOriginal()['shipping_price'] : 0,
             'customer_note' => $obOrder->getProperty('comments'),
             'client_type' => $enquiry ? 'fizica' : $obOrder->getProperty('client_type'),
             'billing' => $arBilling,
@@ -240,11 +240,11 @@ class OrderModelHandler extends ModelHandler
     /**
      * Formatare optiuni pentru functionare corecta in octav
      */
-    protected function formatOptions($custom_options, $obProduct) 
+    protected function formatOptions($custom_options, $obProduct)
     {
 
         $newCustomOptions = json_decode($custom_options);
-        
+
         // Formatare Optiuni Configurator Cos de fum pentru functionare corecta in Octav
         if(isset($obProduct->property['347']) && $obProduct->property['347'] == 'custom-hoch') {
 
@@ -253,7 +253,7 @@ class OrderModelHandler extends ModelHandler
             foreach ($custom_options as $option) {
 
                 $stepName = ConfiguratorStep::where('id', $option->step)->value('name');
- 
+
                 // Pentru nush ce motiv ultimul sau unul din pasi are value ca array
                 if(is_array($option->value)) {
                     $option->value = $option->value[0];
@@ -269,7 +269,7 @@ class OrderModelHandler extends ModelHandler
                     'name' => $name
                 ];
             }
-            
+
             $newCustomOptions = ['cos_de_fum' => $newCustomOptions];
         }
 
