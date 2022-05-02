@@ -3,6 +3,7 @@
 use Input;
 use Kharanenka\Helper\Result;
 use Lovata\OrdersShopaholic\Classes\Item\ShippingTypeItem;
+use Lovata\OrdersShopaholic\Classes\Item\PaymentMethodItem;
 use Lovata\OrdersShopaholic\Components\Cart as CartComponent;
 use PlanetaDelEste\ApiShopaholic\Classes\Resource\Offer\ShowResource as ShowResourceOffer;
 use PlanetaDelEste\ApiShopaholic\Classes\Resource\Product\ItemResource as ItemResourceProduct;
@@ -99,7 +100,7 @@ class Cart extends Base
     public function get($iShippingTypeId = null, $iPaymentMethodId = null): array
     {
         $obShippingTypeItem = $iShippingTypeId ? ShippingTypeItem::make($iShippingTypeId) : null;
-        $obPaymentMethodItem = $iPaymentMethodId ? ShippingTypeItem::make($iPaymentMethodId) : null;
+        $obPaymentMethodItem = $iPaymentMethodId ? PaymentMethodItem::make($iPaymentMethodId) : null;
         $obCartPositionCollection = $this->cartComponent()->get($obShippingTypeItem, $obPaymentMethodItem);
 
         $arCartData = [];
