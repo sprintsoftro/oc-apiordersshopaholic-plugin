@@ -84,7 +84,7 @@ class Cart extends Base
     {
         $response = $this->cartComponent()->onRemove();
         if (!input('return_data')) {
-            return $this->get();
+            return $this->getData();
         }
 
         return $response;
