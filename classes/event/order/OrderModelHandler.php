@@ -266,7 +266,8 @@ class OrderModelHandler extends ModelHandler
                     'step_id' => $option->step,
                     'step_name' => $stepName,
                     'id' => $option->value->id,
-                    'name' => $name
+                    'name' => $name,
+                    'price' => $option->value->price,
                 ];
             }
 
