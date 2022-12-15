@@ -1,2 +1,4 @@
 1.0.0:
     - 'Init plugin'
+1.0.1:
+    - 'Create cart on create Order request to avoid calling two request for create order'

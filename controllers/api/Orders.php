@@ -56,6 +56,25 @@ class Orders extends Base
      */
     public function create()
     {
+        // Daca au fost puse si produse pt cos intai cream cosul -> pt flama
+        if(Input::has('cart')) {
+            $arRequestData = Input::get('cart');
+            $obCartData = $this->cartComponent()->onGetCartData();
+            $arCartProducts = [];
+            foreach($obCartData['data']['position'] as $obPosition) {
+                if(empty($obPosition['property'])) {
+                    $obCartProducts[$obPosition['item_id']] = $obPosition;
+                    $arCartProducts[] = $obPosition['item_id'];
+                }
+            }
+            foreach($arRequestData as $key => $cartItem) {
+                if(in_array($cartItem['offer_id'], $arCartProducts)) {
+                    $arRequestData[$key]['quantity'] += $obCartProducts[$cartItem['offer_id']]['quantity'];
+                }
+            }
+            CartProcessor::instance()->add($arRequestData, OfferCartPositionProcessor::class);
+        }
+
         /** @var MakeOrder $obComponent */
         $obComponent = $this->component(MakeOrder::class);
         $obComponent->onCreate();
