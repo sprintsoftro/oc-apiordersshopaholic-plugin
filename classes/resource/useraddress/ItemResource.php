@@ -2,9 +2,7 @@
 
 use PlanetaDelEste\ApiToolbox\Classes\Resource\Base as BaseResource;
 use PlanetaDelEste\ApiOrdersShopaholic\Plugin;
-use RainLab\Location\Models\Country;
-use RainLab\Location\Models\State;
-use VojtaSvoboda\LocationTown\Models\Town;
+use System\Classes\PluginManager;
 
 /**
  * Class ItemResource
@@ -20,16 +18,24 @@ class ItemResource extends BaseResource
     public function getData(): array
     {
         /** @var Country $obCountry */
-        $obCountry = is_numeric($this->country) ? Country::find($this->country) : null;
-        if (!$obCountry) {
-            $obCountry = Country::getDefault();
+        $obCountry = null;
+        $obState = null;
+        if(PluginManager::instance()->hasPlugin('RainLab.Location')) {
+            
+            $obCountry = is_numeric($this->country) ? \RainLab\Location\Models\Country::find($this->country) : null;
+            if (!$obCountry) {
+                $obCountry = Country::getDefault();
+            }
+            
+            /** @var State $obState */
+            $obState = is_numeric($this->state) ? \RainLab\Location\Models\State::find($this->state) : null;
         }
 
-        /** @var State $obState */
-        $obState = is_numeric($this->state) ? State::find($this->state) : null;
-
         /** @var Town $obCity */
-        $obCity = is_numeric($this->city) ? Town::find($this->city) : null;
+        $obCity = null;
+        if(PluginManager::instance()->hasPlugin('VojtaSvoboda.LocationTown')) {
+            $obCity = is_numeric($this->city) ? \VojtaSvoboda\LocationTown\Models\Town::find($this->city) : null;
+        }
 
         return [
             'country_text' => $obCountry ? $obCountry->name : $this->country,
