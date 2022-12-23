@@ -17,7 +17,7 @@ class ItemResource extends BaseResource
     /**
      * @return array|void
      */
-    public function getData()
+    public function getData(): array
     {
         /** @var Country $obCountry */
         $obCountry = is_numeric($this->country) ? Country::find($this->country) : null;
@@ -41,7 +41,7 @@ class ItemResource extends BaseResource
         ];
     }
 
-    public function getDataKeys()
+    public function getDataKeys(): array
     {
         return [
             'id',
@@ -66,7 +66,7 @@ class ItemResource extends BaseResource
         ];
     }
 
-    protected function getEvent()
+    protected function getEvent(): ?string
     {
         return Plugin::EVENT_ITEMRESOURCE_DATA.'.userAddress';
     }
