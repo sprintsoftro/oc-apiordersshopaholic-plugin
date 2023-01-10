@@ -58,6 +58,7 @@ class ShowResource extends ItemResource
 
             'status_id',
             'status',
+            'octav_data'
         ];
     }
 }

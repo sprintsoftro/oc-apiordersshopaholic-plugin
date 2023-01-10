@@ -4,6 +4,7 @@ use PlanetaDelEste\ApiToolbox\Classes\Resource\Base as BaseResource;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\PaymentMethod\ItemResource as ItemResourcePaymentMethod;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\Status\ItemResource as ItemResourceStatus;
 use PlanetaDelEste\ApiOrdersShopaholic\Plugin;
+use October\Rain\Network\Http;
 
 /**
  * Class ItemResource
@@ -28,7 +29,34 @@ class ItemResource extends BaseResource
             'status'                              => ItemResourceStatus::make($this->status),
             'payment_method'                      => $this->payment_method
                 ? ItemResourcePaymentMethod::make($this->payment_method)
-                : null
+                : null,
+            'octav_data' => $this->getOctavData($this),
+        ];
+    }
+
+    protected function getOctavData($obItemResource) 
+    {
+        if(!isset($obItemResource->property['octav_order_number'])) {
+            return [];
+        }
+        
+        $url = config('api.base_url'). '/api/v1/show-order/'.$obItemResource->property['octav_order_number'];
+
+        $response = Http::get($url, function($http) {
+            $http->header(config('api.key_name'), config('api.key'));
+            $http->timeout(3600);
+        });
+
+        $responseAr = json_decode($response->body, true);
+
+        if(!$responseAr) {
+            return;
+        }
+        
+        return [
+            'octav_status' => $responseAr['status'],
+            'octav_status_id' => $responseAr['status_id'],
+            'octav_awb' => $responseAr['awb']
         ];
     }
 
