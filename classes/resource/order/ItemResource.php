@@ -30,7 +30,8 @@ class ItemResource extends BaseResource
             'payment_method'                      => $this->payment_method
                 ? ItemResourcePaymentMethod::make($this->payment_method)
                 : null,
-            'octav_data' => $this->getOctavData($this),
+            'shipping_type'                       => $this->shipping_type ? $this->shipping_type->toArray() : null,
+            'octav_data'                          => $this->getOctavData($this),
         ];
     }
 

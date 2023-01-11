@@ -51,6 +51,7 @@ class ShowResource extends ItemResource
             'position_total_price',
             'position_total_price_value',
 
+            'shipping_type',
             'shipping_price',
             'shipping_price_value',
             'shipping_tax_percent',

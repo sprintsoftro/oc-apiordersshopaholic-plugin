@@ -187,7 +187,7 @@ class OrderModelHandler extends ModelHandler
         $response = $this->initCurlRequest($postData);
 
         // On Success replace order_number
-        if($response && $response->status == 'success') {
+        if($response && isset($response->status) && $response->status == 'success') {
             $orderNumber = $response->details->order_number;
             $obOrder->update(['property' => ['octav_order_number' => $orderNumber]]);
             $obOrder->order_number = $orderNumber;
