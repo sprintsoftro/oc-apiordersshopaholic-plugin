@@ -1,5 +1,7 @@
 <?php namespace PlanetaDelEste\ApiOrdersShopaholic\Controllers\Api;
 
+use Lang;
+use Input;
 use Exception;
 use Kharanenka\Helper\Result;
 use Lovata\Buddies\Models\User;
@@ -7,6 +9,8 @@ use Lovata\OrdersShopaholic\Classes\Collection\UserAddressCollection;
 use Lovata\OrdersShopaholic\Components\UserAddress;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\UserAddress\IndexCollection;
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
+use Lovata\Toolbox\Classes\Helper\UserHelper;
+use Lovata\OrdersShopaholic\Models\UserAddress as UserAddressModel;
 
 class UserAddresses extends Base
 {
@@ -41,7 +45,25 @@ class UserAddresses extends Base
      */
     public function addAddress(): array
     {
-        return $this->userAddressComponent()->onAdd();
+        $arAddressData = Input::all();
+
+        $iUserID = UserHelper::instance()->getUserId();
+        if (empty($arAddressData) || empty($iUserID)) {
+            $sMessage = Lang::get('lovata.toolbox::lang.message.e_not_correct_request');
+            return Result::setFalse()->setMessage($sMessage)->get();
+        }
+
+        // Disable check for duplicates addresses
+        // $obAddress = UserAddressModel::findAddressByData($arAddressData, $iUserID);
+        // if (!empty($obAddress)) {
+        //     $sMessage = Lang::get('lovata.ordersshopaholic::lang.message.e_address_exists');
+        //     return Result::setFalse()->setMessage($sMessage)->get();
+        // }
+
+        $arAddressData['user_id'] = $iUserID;
+        $this->userAddressComponent()->createAddressObject($arAddressData);
+
+        return Result::get();
     }
 
     /**
@@ -50,7 +72,32 @@ class UserAddresses extends Base
      */
     public function updateAddress(): array
     {
-        return $this->userAddressComponent()->onUpdate();
+        $arAddressData = Input::all();
+        $iAddressID = array_get($arAddressData, 'id');
+
+        $iUserID = UserHelper::instance()->getUserId();
+        // $obAddress = UserAddressModel::findAddressByData($arAddressData, $iUserID);
+
+        if (empty($arAddressData) || empty($iAddressID) || empty($iUserID)) {
+            $sMessage = Lang::get('lovata.toolbox::lang.message.e_not_correct_request');
+            return Result::setFalse()->setMessage($sMessage)->get();
+        }
+
+        // if (!empty($obAddress) && $obAddress->id != $iAddressID) {
+        //     $sMessage = Lang::get('lovata.ordersshopaholic::lang.message.e_address_exists');
+        //     return Result::setFalse()->setMessage($sMessage)->get();
+        // }
+
+        //Find address object by ID
+        $obAddress = UserAddressModel::getByUser($iUserID)->find($arAddressData['id']);
+        if (empty($obAddress)) {
+            $sMessage = Lang::get('lovata.toolbox::lang.message.e_not_correct_request');
+            return Result::setFalse()->setMessage($sMessage)->get();
+        }
+
+        $this->userAddressComponent()->updateAddressObject($obAddress, $arAddressData);
+
+        return Result::get();
     }
 
     /**
