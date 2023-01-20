@@ -67,6 +67,10 @@ class ItemResource extends BaseResource
             'address1',
             'address2',
             'postcode',
+            'company',
+            'is_company',
+            'cui',
+            'reg_number',
             'created_at',
             'updated_at'
         ];

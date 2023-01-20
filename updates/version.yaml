@@ -2,3 +2,6 @@
     - 'Init plugin'
 1.0.1:
     - 'Create cart on create Order request to avoid calling two request for create order'
+1.0.2:
+    - 'Update user address columns to support person type addresses'
+    - table_update_lovata_orders_shopaholic_user_addresses.php

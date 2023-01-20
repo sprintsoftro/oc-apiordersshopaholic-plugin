@@ -3,6 +3,7 @@
 use Exception;
 use Kharanenka\Helper\Result;
 use Lovata\Buddies\Models\User;
+use Lovata\OrdersShopaholic\Classes\Collection\UserAddressCollection;
 use Lovata\OrdersShopaholic\Components\UserAddress;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Resource\UserAddress\IndexCollection;
 use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
@@ -19,9 +20,16 @@ class UserAddresses extends Base
     {
         try {
             $this->currentUser();
-            $arAddress = $this->user->address ? IndexCollection::make(collect($this->user->address)) : [];
+            
+            $allAddresses = [];
 
-            return Result::setData($arAddress)->get();
+            if($this->user->address) {
+                $obAddresses = UserAddressCollection::make();
+                $obAddressesCollection = collect($obAddresses->user($this->user->id));
+                $allAddresses['companies'] = IndexCollection::make($obAddressesCollection->where('is_company', '==', true));
+                $allAddresses['persons'] = IndexCollection::make($obAddressesCollection->where('is_company', '!=', true));
+            }
+            return Result::setData($allAddresses)->get();
         } catch (Exception $e) {
             return static::exceptionResult($e);
         }

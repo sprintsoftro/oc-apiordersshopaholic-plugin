@@ -3,6 +3,7 @@
 use Event;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Event\ApiShopaholicHandler;
 use PlanetaDelEste\ApiOrdersShopaholic\Classes\Event\Order\OrderModelHandler;
+use PlanetaDelEste\ApiOrdersShopaholic\Classes\Event\UserAddress\ExtendUserAddressModel;
 use System\Classes\PluginBase;
 
 /**
@@ -24,5 +25,6 @@ class Plugin extends PluginBase
     {
         Event::subscribe(ApiShopaholicHandler::class);
         Event::subscribe(OrderModelHandler::class);
+        Event::subscribe(ExtendUserAddressModel::class);
     }
 }
