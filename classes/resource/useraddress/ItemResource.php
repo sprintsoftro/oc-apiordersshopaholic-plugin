@@ -52,6 +52,10 @@ class ItemResource extends BaseResource
         return [
             'id',
             'user_id',
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
             'type',
             'country',
             'state',

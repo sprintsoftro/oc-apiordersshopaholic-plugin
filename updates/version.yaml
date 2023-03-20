@@ -5,3 +5,6 @@
 1.0.2:
     - 'Update user address columns to support person type addresses'
     - table_update_lovata_orders_shopaholic_user_addresses.php
+1.0.3:
+    - 'Update user address columns to support person type addresses 2'
+    - table_update_lovata_orders_shopaholic_user_addresses_2.php

@@ -23,7 +23,16 @@ class ExtendUserAddressModel extends ModelHandler
         
         UserAddress::extend(function ($obUserAddress) {
             /** @var UserAddress $obUserAddress */
-            $arFillable = ['company','is_company','cui','reg_number'];
+            $arFillable = [
+                'company',
+                'is_company',
+                'cui',
+                'reg_number',
+                'first_name',
+                'last_name',
+                'email',
+                'phone'
+            ];
             $obUserAddress->addFillable($arFillable);
             $obUserAddress->addCachedField($arFillable);
         });
