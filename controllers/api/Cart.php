@@ -11,9 +11,19 @@ use PlanetaDelEste\ApiToolbox\Classes\Api\Base;
 use Lovata\OrdersShopaholic\Classes\Processor\CartProcessor;
 use Lovata\OrdersShopaholic\Classes\Processor\OfferCartPositionProcessor;
 use Lovata\OrdersShopaholic\Components\ShippingTypeList as ShippingTypeListComponent;
+use Cookie;
 
 class Cart extends Base
 {
+
+    public function init()
+    {
+        try {
+            $this->currentUser();
+        } catch (\Exception $e) {
+        }
+    }
+
     /**
      * @return array
      * @throws \SystemException
@@ -88,6 +98,16 @@ class Cart extends Base
         }
 
         return $response;
+    }
+
+    /**
+     * @return array|\Lovata\Toolbox\Classes\Item\ElementItem[]
+     * @throws \SystemException
+     */
+    public function clear()
+    {
+        Cookie::queue(CartProcessor::COOKIE_NAME, 0, CartProcessor::$iCookieLifeTime);
+        return;
     }
 
     /**

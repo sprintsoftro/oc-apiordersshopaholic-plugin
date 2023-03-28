@@ -11,6 +11,7 @@ Route::middleware(['web'])
                         Route::post('add', 'Cart@add')->name('add');
                         Route::post('update', 'Cart@update')->name('update');
                         Route::post('remove', 'Cart@remove')->name('remove');
+                        Route::post('clear', 'Cart@clear')->name('clear');
                         Route::get('payment_method_list', 'PaymentMethodList@get')->name('payment_method_list');
                         Route::get('shipping_type_list', 'ShippingTypeList@get')->name('shipping_type_list');
                     }
