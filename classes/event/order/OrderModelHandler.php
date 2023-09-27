@@ -267,7 +267,7 @@ class OrderModelHandler extends ModelHandler
                     'step_name' => $stepName,
                     'id' => $option->value->id,
                     'name' => $name,
-                    'price' => $option->value->price,
+                    'price' => $option->value->price_promo > 0 ? $option->value->price_promo : $option->value->price,
                 ];
             }
 
